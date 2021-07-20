@@ -51,7 +51,7 @@ def are_dates_ordered(start_date, end_date):
 
 def get_table_query(farm_id, device_type, col_names, start_date, end_date):
     """
-    :param farm_id: string of numbers, eg. 2147483551
+    :param farm_id:
     :param device_type: one of [valves, pumps, soil, ec]
     :param col_names: list of column names of the table
     :param start_date: formatted 'YYYY-MM-DD'
@@ -77,14 +77,15 @@ def fetch_data(cur, query):
     return data
 
 
-def farm_spreadsheeter(farm_id, incoming_data):
+def farm_spreadsheeter(farm_id, incoming_data, conn):
     """
-    :param farm_id: string of numerical ID
+    :param farm_id: numerical ID string, eg. 2147483551
     :param incoming_data:   {
                                 "email": The email to send the data to
                                 "start_date": Only data from this date on is sent
                                 "end_date": Only data before this date is sent
                             }
+    :param conn: A psycopg2 connection object
     :return: (error_code, return_message)
             error_code is -1 if error exists, 0 if no error
     """
@@ -112,9 +113,6 @@ def farm_spreadsheeter(farm_id, incoming_data):
     device_data = {}  # Dictionary of data for each device type
     col_names = {}  # Dictionary of column names for each device type
     try:
-        conn = psycopg2.connect(database="d6e51l63343226", user="qlaqtrzvxkkslz",
-                                password="0f1411c3f0e45ed5a610937c9da7eaa43ecbfc00ed65ba76b0a000a656ca9a47",
-                                host="ec2-52-31-233-101.eu-west-1.compute.amazonaws.com", port="5432")
         with conn.cursor() as cur:
             for device_type in device_type_list:
                 # print("Columns for "+device_type)
@@ -156,4 +154,9 @@ if __name__ == "__main__":
         "start_date": "2021-07-10",
         "end_date": "2021-07-14",
     }
-    print(farm_spreadsheeter(farm_id, incoming_data)[1])
+
+    # Psycopg2 connection object
+    conn = psycopg2.connect(database="d6e51l63343226", user="qlaqtrzvxkkslz",
+                            password="0f1411c3f0e45ed5a610937c9da7eaa43ecbfc00ed65ba76b0a000a656ca9a47",
+                            host="ec2-52-31-233-101.eu-west-1.compute.amazonaws.com", port="5432")
+    print(farm_spreadsheeter(farm_id, incoming_data, conn)[1])
