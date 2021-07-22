@@ -32,7 +32,7 @@ def format_sheet(ws, col_names, device_data):
     for row in ws.rows:
         for cell in row:
             if cell.value:
-                dims[cell.column_letter] = max((dims.get(cell.column_letter, 0), len(str(cell.value)) + 3))
+                dims[cell.column_letter] = max((dims.get(cell.column_letter, 0), len(str(cell.value)) + 1))
     for col, value in dims.items():
         ws.column_dimensions[col].width = value
 
@@ -41,11 +41,19 @@ def create_workbook(col_names, device_data, filename):
     """
     :param col_names: Dictionary of list of column names. Device types are keys, eg. 'valves'.
     :param device_data: Dictionary of list of tuples of data. Device types are keys, eg. 'valves'.
+    eg. device_data = {
+        'valves': [(1, 2, 3), (2, 4, 8)],
+        'ec': [(3, 6, 9), (5, 25, 125)],
+        #etc.
+    }
+
+    :param filename: The raw file name, i.e., must not be a directory.
     """
     workbook = Workbook()
+    index = 0
     for device_type in col_names.keys():
-        ws = workbook.create_sheet(device_type)
+        ws = workbook.create_sheet(device_type, index)
         format_sheet(ws, col_names[device_type], device_data[device_type])
+        index = index + 1
     workbook.save(filename)
     # print("Spreadsheet save successful")
-

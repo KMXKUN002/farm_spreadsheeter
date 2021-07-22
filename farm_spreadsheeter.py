@@ -8,6 +8,17 @@ from get_column_names_from_table import get_col_names
 from xl_maker import create_workbook
 from emailer import send_mail
 
+# Specification:
+# The function will receive the database connection object, farm_id, and a dictionary that contains an email address, start and end dates.
+# Validate the dates and email address. Check if email exists.
+# for each table get the column names, this will be used as headings in the excel report.
+# Get data between start and end date for each table. Each table must have its own sheet in the excel document.
+# Populate the data from the tables into the respective sheets in the excel document.
+# Send the report as an attachment to the email address.
+
+# Exceptions must be returned, it will be used to prompt the user on the front-end.
+
+
 # Name for excel file
 filename = "Farm Data.xlsx"
 
@@ -159,4 +170,5 @@ if __name__ == "__main__":
     conn = psycopg2.connect(database="d6e51l63343226", user="qlaqtrzvxkkslz",
                             password="0f1411c3f0e45ed5a610937c9da7eaa43ecbfc00ed65ba76b0a000a656ca9a47",
                             host="ec2-52-31-233-101.eu-west-1.compute.amazonaws.com", port="5432")
+
     print(farm_spreadsheeter(farm_id, incoming_data, conn)[1])
